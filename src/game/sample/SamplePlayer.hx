@@ -10,7 +10,8 @@ package sample;
 
 class SamplePlayer extends Entity {
 	var ca : ControllerAccess<GameAction>;
-	var walkSpeed = 0.;
+	var walkSpeedH = 0.;
+	var walkSpeedV = 0.;
 
 	// This is TRUE if the player is not falling
 	var onGround(get,never) : Bool;
@@ -27,7 +28,7 @@ class SamplePlayer extends Entity {
 
 		// Misc inits
 		frictX = 0.84;
-		frictY = 0.94;
+		// frictY = 0.94;
 
 		// Camera tracks this
 		camera.trackEntity(this, true);
@@ -89,24 +90,30 @@ class SamplePlayer extends Entity {
 	override function preUpdate() {
 		super.preUpdate();
 
-		walkSpeed = 0;
-		if( onGround )
-			cd.setS("recentlyOnGround",0.1); // allows "just-in-time" jumps
+		walkSpeedH = 0;
+		walkSpeedV = 0;
+		// if( onGround )
+		// 	cd.setS("recentlyOnGround",0.1); // allows "just-in-time" jumps
 
 
-		// Jump
-		if( cd.has("recentlyOnGround") && ca.isPressed(Jump) ) {
-			dy = -0.85;
-			setSquashX(0.6);
-			cd.unset("recentlyOnGround");
-			fx.dotsExplosionExample(centerX, centerY, 0xffcc00);
-			ca.rumble(0.05, 0.06);
-		}
+		// // Jump
+		// if( cd.has("recentlyOnGround") && ca.isPressed(Jump) ) {
+		// 	dy = -0.85;
+		// 	setSquashX(0.6);
+		// 	cd.unset("recentlyOnGround");
+		// 	fx.dotsExplosionExample(centerX, centerY, 0xffcc00);
+		// 	ca.rumble(0.05, 0.06);
+		// }
 
 		// Walk
 		if( ca.getAnalogDist2(MoveLeft,MoveRight)>0 ) {
 			// As mentioned above, we don't touch physics values (eg. `dx`) here. We just store some "requested walk speed", which will be applied to actual physics in fixedUpdate.
-			walkSpeed = ca.getAnalogValue2(MoveLeft,MoveRight); // -1 to 1
+			walkSpeedH = ca.getAnalogValue2(MoveLeft,MoveRight); // -1 to 1
+		}
+		
+		if( ca.getAnalogDist2(MoveUp,MoveDown)>0 ) {
+			// As mentioned above, we don't touch physics values (eg. `dx`) here. We just store some "requested walk speed", which will be applied to actual physics in fixedUpdate.
+			walkSpeedV = ca.getAnalogValue2(MoveUp,MoveDown); // -1 to 1
 		}
 	}
 
@@ -115,13 +122,19 @@ class SamplePlayer extends Entity {
 		super.fixedUpdate();
 
 		// Gravity
-		if( !onGround )
-			dy+=0.05;
+		// if( !onGround )
+		// 	dy+=0.05;
 
 		// Apply requested walk movement
-		if( walkSpeed!=0 ) {
+		if( walkSpeedH!=0 ) {
 			var speed = 0.045;
-			dx += walkSpeed * speed;
+			dx += walkSpeedH * speed;
+		}
+
+		// Apply requested walk movement
+		if( walkSpeedV!=0 ) {
+			var speed = 0.045;
+			dy += walkSpeedV * speed;
 		}
 	}
 }
