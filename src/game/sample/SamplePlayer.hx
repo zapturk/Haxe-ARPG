@@ -27,8 +27,8 @@ class SamplePlayer extends Entity {
 			setPosCase(start.cx, start.cy);
 
 		// Misc inits
-		frictX = 0.84;
-		// frictY = 0.94;
+		frictX = 0.01;
+		frictY = 0.01;
 
 		// Camera tracks this
 		camera.trackEntity(this, true);
@@ -125,15 +125,15 @@ class SamplePlayer extends Entity {
 		// if( !onGround )
 		// 	dy+=0.05;
 
+		var speed = 0.20;
+
 		// Apply requested walk movement
 		if( walkSpeedH!=0 ) {
-			var speed = 0.045;
 			dx += walkSpeedH * speed;
 		}
 
 		// Apply requested walk movement
 		if( walkSpeedV!=0 ) {
-			var speed = 0.045;
 			dy += walkSpeedV * speed;
 		}
 	}
